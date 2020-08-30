@@ -28,28 +28,43 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`clp init`](#clp-init)
 * [`clp hello [FILE]`](#clp-hello-file)
 * [`clp help [COMMAND]`](#clp-help-command)
 
-## `clp hello [FILE]`
+## `clp init`
 
-describe the command here
+Run it to setup clickup cli
 
 ```
 USAGE
-  $ clp hello [FILE]
+  $ clp init
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h  Help 
 
 EXAMPLE
-  $ clp hello
-  hello world from ./src/hello.ts!
+  $ clp init
 ```
 
-_See code: [src/commands/hello.ts](https://github.com/VadimKh/clp/blob/v0.0.0/src/commands/hello.ts)_
+_See code: [src/commands/init.ts](https://github.com/VadimKh/clp/blob/v0.0.0/src/commands/init.ts)_
+
+## `clp hello [FILE]`
+
+Text
+
+```
+USAGE
+  $ clp help
+
+OPTIONS
+  -h  Help 
+
+EXAMPLE
+  $ clp help
+```
+
+_See code: [src/commands/help.ts](https://github.com/VadimKh/clp/blob/v0.0.0/src/commands/help.ts)_
 
 ## `clp help [COMMAND]`
 
