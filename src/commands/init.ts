@@ -1,6 +1,12 @@
 import {Command, flags} from '@oclif/command'
-import {getApiKey, setApiKey} from '../conf'
+import {getApiKey, setApiKey, setDefaultTeam, setDefaultSpace, setDefaultList} from '../conf'
+import {getTeams, getSpaces, getLists} from '../clickup'
 import * as inquirer from 'inquirer'
+import cli from 'cli-ux'
+import chalk from 'chalk'
+
+// inquirer.registerPrompt('checkbox-plus', require('inquirer-checkbox-plus-prompt'))
+// inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 
 export default class Init extends Command {
   static description = 'Initial set up of clickup cli'
@@ -35,6 +41,46 @@ export default class Init extends Command {
       name: 'apiKey',
     }])
 
-    setApiKey(key)
+    setApiKey(key.apiKey)
+
+    cli.action.start('Getting teams')
+    const teams = await getTeams()
+    cli.action.stop()
+
+    inquirer.registerPrompt('search-list', require('inquirer-search-list'))
+
+    const defaultTeam = await inquirer.prompt([{
+      type: 'search-list',
+      message: 'Choose default team: ',
+      name: 'team',
+      choices: teams.map(t => ({name: chalk.hex(t.color)(t.name), value: t})),
+    }])
+    setDefaultTeam(defaultTeam.team)
+
+    cli.action.start('Getting spaces')
+    const spaces = await getSpaces(defaultTeam.team.id)
+    cli.action.stop()
+
+    const defaultSpace = await inquirer.prompt([{
+      type: 'search-list',
+      message: 'Choose default space: ',
+      name: 'space',
+      choices: spaces.map(s => ({name: s.name, value: s})),
+    }])
+
+    setDefaultSpace(defaultSpace.space)
+
+    cli.action.start('Getting lists')
+    const lists = await getLists(defaultSpace.space.id)
+    cli.action.stop()
+
+    const defaultList = await inquirer.prompt([{
+      type: 'search-list',
+      message: 'Choose default list: ',
+      name: 'list',
+      choices: lists.map(l => ({name: l.name, value: l})),
+    }])
+
+    setDefaultList(defaultList.list)
   }
 }
