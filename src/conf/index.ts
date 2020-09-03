@@ -1,5 +1,5 @@
 import Conf from 'conf'
-import {ClickUpTeam, ClickUpSpace, ClickUpList, ClickUpListResponse} from '../clickup'
+import {ClickUpTeam, ClickUpSpace, ClickUpList} from '../clickup'
 
 const API_KEY = 'api_key'
 const DEFAULT_TEAM = 'default_team'

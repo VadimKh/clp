@@ -1,5 +1,5 @@
 import {Command, flags} from '@oclif/command'
-import {getApiKey, setApiKey, setDefaultTeam, setDefaultSpace, setDefaultList} from '../conf'
+import {getApiKey, setApiKey, setDefaultTeam, setDefaultSpace, setDefaultList, getDefaultTeam, getDefaultSpace, getDefaultList} from '../conf'
 import {getTeams, getSpaces, getLists} from '../clickup'
 import * as inquirer from 'inquirer'
 import cli from 'cli-ux'
@@ -17,12 +17,29 @@ export default class Init extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
+    list: flags.boolean({char: 'l', description: 'Use it to define default list'}),
+    space: flags.boolean({char: 's', description: 'Use it to define default space'}),
+    team: flags.boolean({char: 't', description: 'Use it to define default team'}),
+    key: flags.boolean({char: 'k', description: 'Set Api Key only'}),
+    display: flags.boolean({char: 'd', description: 'Show current configuration'}),
   }
 
   async run() {
-    this.parse(Init)
-    const apiKey = getApiKey()
-    if (apiKey) {
+    const {flags} = this.parse(Init)
+
+    if (flags.display) {
+      // eslint-disable-next-line no-console
+      console.log(`Api Key is ${getApiKey() ? '' : 'not '} defined`)
+      // eslint-disable-next-line no-console
+      console.log('Default team: ', chalk.bold(getDefaultTeam().name))
+      // eslint-disable-next-line no-console
+      console.log('Default space: ', chalk.bold(getDefaultSpace().name))
+      // eslint-disable-next-line no-console
+      console.log('Default list: ', chalk.bold(getDefaultList().name))
+      return
+    }
+
+    if (getApiKey()) {
       const result = await inquirer.prompt([{
         type: 'confirm',
         message: 'Key is already defined. Are you sure you want to overwrite it?',
