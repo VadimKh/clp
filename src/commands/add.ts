@@ -26,15 +26,16 @@ export default class Init extends Command {
   static flags = {
     help: flags.help({char: 'h'}),
     list: flags.boolean({char: 'l', description: 'Use it to specify list'}),
-    space: flags.boolean({char: 's', description: 'Use it to specify space'}),
-    team: flags.boolean({char: 't', description: 'Use it to specify team'}),
+    space: flags.boolean({description: 'Use it to specify space'}),
+    team: flags.boolean({description: 'Use it to specify team'}),
     description: flags.boolean({char: 'd', description: 'Use it to specify description'}),
+    status: flags.string({char: 's', description: 'Use it to specify status'}),
   }
 
   static args = [
     {
       name: 'name',               // name of arg to show in help and reference with args[name]
-      required: false,            // make the arg required with `required: true`
+      required: true,            // make the arg required with `required: true`
       description: 'Specify task name', // help description
     },
   ]
@@ -49,7 +50,7 @@ export default class Init extends Command {
     const listId = getDefaultList().id
 
     if (flags.description) {
-      const fileName = `/tmp/${generateHash({length: 20})}`
+      const fileName = `/tmp/${generateHash({length: 20})}.md`
       const editor = process.env.EDITOR || 'vi'
 
       const child = childProcess.spawn(editor, [fileName], {
