@@ -62,6 +62,7 @@ export const createTask = async (listId: string, task: ClickUpTask): Promise<Cli
 
 export interface ClickUpTask {
   name: string;
+  markdown_description?: string;
   description?: string;
   assignees?: number[];
   tags?: string[];
