@@ -61,7 +61,7 @@ const chooseSpace = async (teamId: string): Promise<ClickUpSpace> => {
   return defaultSpace.space
 }
 
-export default class Init extends Command {
+export default class Config extends Command {
   static description = 'Initial set up of clickup cli'
 
   static examples = [
@@ -77,7 +77,7 @@ export default class Init extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(Init)
+    const {flags} = this.parse(Config)
 
     if (flags.display) {
       // eslint-disable-next-line no-console

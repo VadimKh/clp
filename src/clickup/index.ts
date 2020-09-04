@@ -8,8 +8,8 @@ const fetchEndpoint = async (endpoint: string, options?: RequestInit) => {
   const url = CLICKUP_ENDPOINT + endpoint
   const fetchOptions: RequestInit = {
     ...options,
-    body: null,
     headers: {
+      'Content-Type': 'application/json',
       Authorization: getApiKey(),
     },
   }
@@ -52,6 +52,24 @@ export const getLists = async (spaceId: string): Promise<Array<ClickUpList>> => 
   return lists
 }
 
+export const createTask = async (listId: string, task: ClickUpTask): Promise<ClickUpTask> => {
+  const response = await fetchEndpoint(`list/${listId}/task`, {
+    method: 'POST',
+    body: JSON.stringify(task),
+  })
+  return response.task
+}
+
+export interface ClickUpTask {
+  name: string;
+  description?: string;
+  assignees?: number[];
+  tags?: string[];
+  status?: string;
+  priority?: number;
+  due_date?: number;
+  due_date_time?: boolean;
+}
 export interface ClickUpFolder {
   id: string;
   name: string;
@@ -120,6 +138,15 @@ export interface ClickUpStatus {
   type: string;
   orderindex: number;
   color: string;
+}
+
+export interface ClickUpUser {
+  id: number;
+  username: string;
+  color: string;
+  initials: string;
+  email: string;
+  profilePicture: string;
 }
 
 export interface ClickUpSpaceResponse {
