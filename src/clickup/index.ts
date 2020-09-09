@@ -38,6 +38,10 @@ export const getFolderlessLists = async (spaceId: string): Promise<Array<ClickUp
   return response.lists
 }
 
+export const getList = async (listId: string): Promise<ClickUpList> => {
+  return await fetchEndpoint(`list/${listId}`) as ClickUpList
+}
+
 export const getLists = async (spaceId: string): Promise<Array<ClickUpList>> => {
   let lists = await getFolderlessLists(spaceId) || []
   const folders = await getFolders(spaceId)
@@ -60,6 +64,12 @@ export const createTask = async (listId: string, task: ClickUpTask): Promise<Cli
   return response.task
 }
 
+// export const getTasks = async(teamId: string, filter:)
+
+
+// export interface ClickUpTaskFilter {
+
+// }
 export interface ClickUpTask {
   name: string;
   markdown_description?: string;

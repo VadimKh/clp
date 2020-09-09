@@ -4,62 +4,10 @@ import {getTeams, getSpaces, getLists, ClickUpList, ClickUpTeam, ClickUpSpace} f
 import * as inquirer from 'inquirer'
 import cli from 'cli-ux'
 import chalk from 'chalk'
+import { chooseTeam, chooseSpace, chooseList } from '../utils'
 
 // inquirer.registerPrompt('checkbox-plus', require('inquirer-checkbox-plus-prompt'))
 // inquirer.registerPrompt('search-list', require('inquirer-search-list'))
-
-const chooseList = async (spaceId: string): Promise<ClickUpList> => {
-  cli.action.start('Getting lists')
-  const lists = await getLists(spaceId)
-  cli.action.stop()
-
-  inquirer.registerPrompt('search-list', require('inquirer-search-list'))
-
-  const defaultList = await inquirer.prompt([{
-    type: 'search-list',
-    message: 'Choose default list: ',
-    name: 'list',
-    choices: lists.map(l => ({name: l.name, value: l})),
-  }])
-
-  setDefaultList(defaultList.list)
-  return defaultList.list
-}
-
-const chooseTeam = async (): Promise<ClickUpTeam> => {
-  cli.action.start('Getting teams')
-  const teams = await getTeams()
-  cli.action.stop()
-
-  inquirer.registerPrompt('search-list', require('inquirer-search-list'))
-
-  const defaultTeam = await inquirer.prompt([{
-    type: 'search-list',
-    message: 'Choose default team: ',
-    name: 'team',
-    choices: teams.map(t => ({name: chalk.hex(t.color)(t.name), value: t})),
-  }])
-  setDefaultTeam(defaultTeam.team)
-  return defaultTeam.team
-}
-
-const chooseSpace = async (teamId: string): Promise<ClickUpSpace> => {
-  cli.action.start('Getting spaces')
-  const spaces = await getSpaces(teamId)
-  cli.action.stop()
-
-  inquirer.registerPrompt('search-list', require('inquirer-search-list'))
-
-  const defaultSpace = await inquirer.prompt([{
-    type: 'search-list',
-    message: 'Choose default space: ',
-    name: 'space',
-    choices: spaces.map(s => ({name: s.name, value: s})),
-  }])
-
-  setDefaultSpace(defaultSpace.space)
-  return defaultSpace.space
-}
 
 export default class Config extends Command {
   static description = 'Initial set up of clickup cli'
@@ -92,15 +40,15 @@ export default class Config extends Command {
     }
 
     if (flags.team) {
-      await chooseTeam()
+      setDefaultTeam(await chooseTeam())
     }
 
     if (flags.team || flags.space) {
-      await chooseSpace(getDefaultTeam().id)
+      setDefaultSpace(await chooseSpace(getDefaultTeam().id))
     }
 
     if (flags.team || flags.space || flags.list) {
-      await chooseList(getDefaultSpace().id)
+      setDefaultList(await chooseList(getDefaultSpace().id))
       return
     }
 
@@ -126,7 +74,9 @@ export default class Config extends Command {
     setApiKey(key.apiKey)
 
     const team = await chooseTeam()
+    setDefaultTeam(team)
     const space = await chooseSpace(team.id)
-    await chooseList(space.id)
+    setDefaultSpace(space)
+    setDefaultList(await chooseList(space.id))
   }
 }

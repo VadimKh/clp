@@ -2,13 +2,11 @@ import * as childProcess from 'child_process'
 import {promises as fs} from 'fs'
 import generateHash from 'random-hash'
 import {Command, flags} from '@oclif/command'
-import {getDefaultList} from '../conf'
+import {getDefaultList, getDefaultTeam, getDefaultSpace} from '../conf'
 import {createTask, ClickUpTask} from '../clickup'
 import * as inquirer from 'inquirer'
 import cli from 'cli-ux'
-
-// inquirer.registerPrompt('checkbox-plus', require('inquirer-checkbox-plus-prompt'))
-// inquirer.registerPrompt('search-list', require('inquirer-search-list'))
+import {chooseTeam, chooseSpace, chooseList, chooseStatus} from '../utils'
 
 const createTaskCli = (listId: string, task: ClickUpTask) => {
   cli.action.start('Creating task')
@@ -29,7 +27,7 @@ export default class Init extends Command {
     space: flags.boolean({description: 'Use it to specify space'}),
     team: flags.boolean({description: 'Use it to specify team'}),
     description: flags.boolean({char: 'd', description: 'Use it to specify description'}),
-    status: flags.string({char: 's', description: 'Use it to specify status'}),
+    status: flags.boolean({char: 's', description: 'Use it to specify status'}),
   }
 
   static args = [
@@ -47,7 +45,25 @@ export default class Init extends Command {
       name: args.name,
     }
 
-    const listId = getDefaultList().id
+    let listId = getDefaultList().id
+    let teamId = getDefaultTeam().id
+    let spaceId = getDefaultSpace().id
+
+    if (flags.team) {
+      teamId = (await chooseTeam()).id
+    }
+
+    if (flags.team || flags.space) {
+      spaceId = (await chooseSpace(teamId)).id
+    }
+
+    if (flags.team || flags.space || flags.list) {
+      listId = (await chooseList(spaceId)).id
+    }
+
+    if (flags.status) {
+      task.status = (await chooseStatus(listId))
+    }
 
     if (flags.description) {
       const fileName = `/tmp/${generateHash({length: 20})}.md`
